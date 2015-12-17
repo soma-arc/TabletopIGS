@@ -1,0 +1,15 @@
+compile_command = cl
+compile_options = /c /EHsc
+link_command    = link
+link_options    =
+libs            = libAR.lib libARgsub_lite.lib libARgsub.lib libARgsubUtil.lib libARMulti.lib libARvideo.lib
+cl_dir = c:\Program Files (x86)\Microsoft Visual Studio 12.0\VC\bin
+
+rule compile
+  command =  $cl_dir\$compile_command $compile_options $in
+
+rule link
+  command = $cl_dir\$link_command $link_options $in $libs
+
+build main.obj  : compile main.cpp
+build main.exe  : link main.obj
