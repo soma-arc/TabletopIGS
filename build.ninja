@@ -11,5 +11,5 @@ rule compile
 rule link
   command = $cl_dir\$link_command $link_options $in $libs
 
-build main.obj  : compile main.cpp
+build main.obj  : compile src\main.cpp
 build main.exe  : link main.obj

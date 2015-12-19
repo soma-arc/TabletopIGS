@@ -141,10 +141,10 @@ int main(int argc, char *argv[]) {
   glutCreateWindow("ARToolKit Sample");
   arSettings = arglSetupForCurrentContext();
 
-  setupCamera("WDM_camera_flipV.xml", "camera_para.dat");
+  setupCamera("resources/WDM_camera_flipV.xml", "resources/camera_para.dat");
 
-  crossMarkerId = arLoadPatt("cross.pat");
-  pMarkerId = arLoadPatt("p.pat");
+  crossMarkerId = arLoadPatt("resources/cross.pat");
+  pMarkerId = arLoadPatt("resources/p.pat");
 
   glutDisplayFunc(display);
   glutIdleFunc(display);
