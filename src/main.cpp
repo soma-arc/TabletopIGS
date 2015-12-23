@@ -9,6 +9,11 @@
 #include <AR/ar.h>
 #include <AR/video.h>
 #include <AR/gsub_lite.h>
+#include <vector>
+#include <algorithm>
+#include "Complex.h"
+#include "Point.h"
+#include "ReferenceMarker.h"
 
 ARParam arCameraParam;
 ARGL_CONTEXT_SETTINGS_REF arSettings;
@@ -18,6 +23,9 @@ double crossMarkerWidth = 80.0;
 double pMarkerWidth = 40.0;
 int crossMarkerId;
 int pMarkerId;
+ReferenceMarker origin("resources/cross.pat", 80.0);
+
+using namespace std;
 
 bool setupCamera(char videoConfigFile[], char cameraParamFile[]) {
 
@@ -30,7 +38,7 @@ bool setupCamera(char videoConfigFile[], char cameraParamFile[]) {
     return false;
   }
 
-  ARParam	wparam;
+  ARParam wparam;
   if (arParamLoad(cameraParamFile, 1, &wparam) < 0) {
     std::cout << "camera parameter file load failed \n";
     return false;
@@ -63,6 +71,8 @@ void mySetLight() {
   glEnable(GL_LIGHT0);
 }
 
+double pre[3][4];
+bool first = true;
 void display() {
 
   ARUint8* image = arVideoGetImage();
@@ -89,29 +99,53 @@ void display() {
   ARMarkerInfo* markerInfo;
   arDetectMarker(image, threshold, &markerInfo, &markerNum);
 
-
   for (int j = 0; j < markerNum; j++) {
     glPushMatrix();
-    if (markerInfo[j].id == crossMarkerId) {
-      double center[2] = { 0, 0 };
-      double transMat[3][4];
+    if (markerInfo[j].id == origin.patternId) {
       double M[16];
-      arGetTransMat(&(markerInfo[j]), center, crossMarkerWidth, transMat);
-      arglCameraViewRH(transMat, M, 1.0);
-
+      origin.getTransMat(&(markerInfo[j]));
+      arglCameraViewRH(origin.transMat, M, 1.0);
       glLoadMatrixd(M);
       glTranslatef(0, 0, 40);
       glutSolidCube(80);
     }else if(markerInfo[j].id == pMarkerId){
+      glPushMatrix();
       double center[2] = { 0, 0 };
       double transMat[3][4];
       double M[16];
-      arGetTransMat(&(markerInfo[j]), center, pMarkerWidth, transMat);
-      arglCameraViewRH(transMat, M, 1.0);
-
+      if(first){
+        arGetTransMat(&(markerInfo[j]), center, pMarkerWidth, transMat);
+        first = false;
+      }else{
+        arGetTransMatCont(&(markerInfo[j]), pre, center, pMarkerWidth, transMat);
+      }
+      arglCameraViewRH(origin.transMat, M, 1.0);
       glLoadMatrixd(M);
-      glTranslatef(0, 0, 40);
-      glutSolidSphere(40, 100, 100);
+
+
+      vector<double> distance = origin.getDistance(transMat);
+      vector<double> rotation = origin.getRotation(transMat);
+      std::cout << "distance ";
+      for (auto n: distance) {
+        std::cout << n << " ";
+      }
+      std::cout << "rotation ";
+      for (auto n: rotation) {
+        std::cout << n << " ";
+      }
+      std::cout << std::endl << std::endl;
+      glLineWidth(10.);
+      glBegin(GL_LINES);
+      glVertex3f( 0., 0. , .5);
+      glVertex3f( distance[0], distance[1], .5);
+      glEnd();
+
+      for(int x = 0 ; x < 3 ; x++){
+        for(int y = 0 ; y < 4 ; y++){
+          pre[x][y] = transMat[x][y];
+        }
+      }
+      glPopMatrix();
     }
     glPopMatrix();
   }
