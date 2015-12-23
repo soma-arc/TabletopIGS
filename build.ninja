@@ -13,4 +13,6 @@ rule link
 
 build main.obj  : compile src\main.cpp
 build Complex.obj : compile src\Complex.cpp
-build main.exe  : link main.obj Complex.obj
+build Figure.obj : compile src\Figure.cpp
+build Point.obj : compile src\Point.cpp
+build main.exe  : link main.obj Complex.obj Figure.obj Point.obj
