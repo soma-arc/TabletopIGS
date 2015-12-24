@@ -17,4 +17,6 @@ build Figure.obj : compile src\Figure.cpp
 build Point.obj : compile src\Point.cpp
 build ReferenceMarker.obj : compile src\ReferenceMarker.cpp
 build MarkedPoint.obj : compile src\MarkedPoint.cpp
-build main.exe  : link main.obj Complex.obj Figure.obj Point.obj ReferenceMarker.obj MarkedPoint.obj
+build Line.obj : compile src\Line.cpp
+build LineEvaluator.obj : compile src\LineEvaluator.cpp
+build main.exe  : link main.obj Complex.obj Figure.obj Point.obj ReferenceMarker.obj MarkedPoint.obj Line.obj LineEvaluator.obj
