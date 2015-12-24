@@ -19,6 +19,7 @@ Point::Point(Complex x, Complex y){
 }
 
 void Point::draw(){
+  fillCircle(DISPLAY_RADIUS, x.re(), y.re(), 0.);
 }
 
 void Point::setPosition(double x, double y){

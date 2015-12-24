@@ -11,9 +11,11 @@
 #include <AR/gsub_lite.h>
 #include <vector>
 #include <algorithm>
+#include <unordered_map>
 #include "Complex.h"
 #include "Point.h"
 #include "ReferenceMarker.h"
+#include "MarkedPoint.h"
 
 ARParam arCameraParam;
 ARGL_CONTEXT_SETTINGS_REF arSettings;
@@ -24,6 +26,7 @@ double pMarkerWidth = 40.0;
 int crossMarkerId;
 int pMarkerId;
 ReferenceMarker origin("resources/cross.pat", 80.0);
+unordered_map<int, MarkedPoint> idMarkedPointMap;
 
 using namespace std;
 
@@ -98,7 +101,6 @@ void display() {
   int markerNum;
   ARMarkerInfo* markerInfo;
   arDetectMarker(image, threshold, &markerInfo, &markerNum);
-
   for (int j = 0; j < markerNum; j++) {
     glPushMatrix();
     if (markerInfo[j].id == origin.patternId) {
@@ -108,47 +110,33 @@ void display() {
       glLoadMatrixd(M);
       glTranslatef(0, 0, 40);
       glutSolidCube(80);
-    }else if(markerInfo[j].id == pMarkerId){
+    }else{
       glPushMatrix();
-      double center[2] = { 0, 0 };
-      double transMat[3][4];
-      double M[16];
-      if(first){
-        arGetTransMat(&(markerInfo[j]), center, pMarkerWidth, transMat);
-        first = false;
-      }else{
-        arGetTransMatCont(&(markerInfo[j]), pre, center, pMarkerWidth, transMat);
-      }
-      arglCameraViewRH(origin.transMat, M, 1.0);
-      glLoadMatrixd(M);
-
-
-      vector<double> distance = origin.getDistance(transMat);
-      vector<double> rotation = origin.getRotation(transMat);
-      std::cout << "distance ";
-      for (auto n: distance) {
-        std::cout << n << " ";
-      }
-      std::cout << "rotation ";
-      for (auto n: rotation) {
-        std::cout << n << " ";
-      }
-      std::cout << std::endl << std::endl;
-      glLineWidth(10.);
-      glBegin(GL_LINES);
-      glVertex3f( 0., 0. , .5);
-      glVertex3f( distance[0], distance[1], .5);
-      glEnd();
-
-      for(int x = 0 ; x < 3 ; x++){
-        for(int y = 0 ; y < 4 ; y++){
-          pre[x][y] = transMat[x][y];
-        }
-      }
+      if(markerInfo[j].id == -1) continue;
+      MarkedPoint& p = idMarkedPointMap[markerInfo[j].id];
+      p.getTransMat(&(markerInfo[j]));
+      p.setDistanceFromOrigin(origin);
+      p.setRotationFromOrigin(origin);
       glPopMatrix();
     }
     glPopMatrix();
   }
+  glPushMatrix();
+  double M[16];
+  arglCameraViewRH(origin.transMat, M, 1.0);
+  glLoadMatrixd(M);
+  for(auto itr = idMarkedPointMap.begin(); itr != idMarkedPointMap.end(); ++itr) {
+    cout << "id"  << itr->first << endl;
+    if(itr->second.visible == false || itr->first == -1) continue;
+    vector<double> distance = itr->second.distanceFromOrigin;
+    cout << distance[0] << " " << distance[1] << " " << distance[2] << endl;
+    glBegin(GL_LINES);
+    glVertex3f(0., 0., 0.);
+    glVertex3f(distance[0], distance[1], distance[2]);
+    itr->second.draw();
+    glEnd();
+  }
+  glPopMatrix();
 
   glDisable(GL_LIGHTING);
   glDisable(GL_DEPTH_TEST);
@@ -168,6 +156,24 @@ void quit() {
   arglCleanup(arSettings);
 }
 
+void loadPatterns(){
+  MarkedPoint pointA("resources/A.pat", 40);
+  MarkedPoint pointB("resources/B.pat", 40);
+  MarkedPoint pointC("resources/C.pat", 40);
+  MarkedPoint pointD("resources/D.pat", 40);
+  MarkedPoint pointE("resources/E.pat", 40);
+  MarkedPoint pointF("resources/F.pat", 40);
+  idMarkedPointMap[pointA.patternId] = pointA;
+  idMarkedPointMap[pointB.patternId] = pointB;
+  idMarkedPointMap[pointC.patternId] = pointC;
+  idMarkedPointMap[pointD.patternId] = pointD;
+  idMarkedPointMap[pointE.patternId] = pointE;
+  idMarkedPointMap[pointF.patternId] = pointF;
+  for(auto itr = idMarkedPointMap.begin(); itr != idMarkedPointMap.end(); ++itr) {
+    cout << "id"  << itr->first << endl;
+  }
+}
+
 int main(int argc, char *argv[]) {
   glutInit(&argc, argv);
   glutInitWindowSize(width, height);
@@ -177,13 +183,12 @@ int main(int argc, char *argv[]) {
 
   setupCamera("resources/WDM_camera_flipV.xml", "resources/camera_para.dat");
 
-  crossMarkerId = arLoadPatt("resources/cross.pat");
-  pMarkerId = arLoadPatt("resources/p.pat");
-
   glutDisplayFunc(display);
   glutIdleFunc(display);
   glutKeyboardFunc(keyboard);
   atexit(quit);
+
+  loadPatterns();
 
   glutMainLoop();
 }

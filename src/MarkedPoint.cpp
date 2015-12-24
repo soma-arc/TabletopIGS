@@ -13,7 +13,7 @@ MarkedPoint::MarkedPoint(const char* markerPath, double markerWidth){
 
 void MarkedPoint::draw(){
   if(visible == false) return;
-  fillCircle(DISPLAY_RADIUS, x.re(), y.re());
+  fillCircle(DISPLAY_RADIUS, x.re(), y.re(), distanceFromOrigin[2]);
 }
 
 void MarkedPoint::setDistanceFromOrigin(ReferenceMarker origin){
