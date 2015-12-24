@@ -1,7 +1,11 @@
+#ifndef INCLUDED_POINT_H
+#define INCLUDED_POINT_H
+
 #include "Figure.h"
 #include "Complex.h"
 #include <cmath>
 #include <GL/freeglut.h>
+
 
 class Point : public Figure{
  public:
@@ -17,3 +21,5 @@ class Point : public Figure{
 
   Complex x, y, z;
 };
+
+#endif
