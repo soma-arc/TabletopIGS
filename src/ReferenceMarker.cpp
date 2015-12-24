@@ -1,5 +1,7 @@
 #include "ReferenceMarker.h"
 
+ReferenceMarker::ReferenceMarker(){}
+
 ReferenceMarker::ReferenceMarker(const char* markerPath, double markerWidth){
   this->patternId = arLoadPatt(markerPath);
   this->markerWidth = markerWidth;
