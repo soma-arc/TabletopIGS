@@ -3,6 +3,7 @@
 
 #include "Figure.h"
 #include "Point.h"
+#include <iostream>
 
 class Line : public Figure{
  public:
@@ -15,6 +16,7 @@ class Line : public Figure{
 
   Point p1, p2;
   Complex a, b, c;
+  double z;
 };
 
 #endif

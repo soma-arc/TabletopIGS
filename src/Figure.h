@@ -8,6 +8,7 @@
 class Figure{
  public:
   virtual void draw() = 0;
+  void drawCircle(double radius, double x, double y, double z);
   void fillCircle(double radius, double x, double y, double z);
 };
 

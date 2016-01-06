@@ -1,3 +1,6 @@
+#ifndef INCLUDED_LINE_CPP
+#define INCLUDED_LINE_CPP
+
 #include "Line.h"
 
 Line::Line(){}
@@ -19,9 +22,9 @@ void Line::setPoints(Point p1, Point p2){
 }
 
 void Line::draw(){
-  glBegin(GL_LINE);
-  glVertex3f(p1.x.re(), p1.y.re(), 0.);
-  glVertex3f(p2.x.re(), p2.y.re(), 0.);
+  glBegin(GL_LINES);
+  glVertex3f(p1.x.re(), p1.y.re(), 5.);
+  glVertex3f(p2.x.re(), p2.y.re(), 5.);
   glEnd();
 }
 
@@ -32,3 +35,5 @@ double Line::calcX(double y){
 double Line::calcY(double x){
   return -1 * (a.re() * x + c.re()) / b.re();
 }
+
+#endif

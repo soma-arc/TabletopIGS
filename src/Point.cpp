@@ -37,4 +37,13 @@ double Point::dist(Point a, Point b){
                    (a.y.re() - b.y.re()) * (a.y.re() - b.y.re()));
 }
 
+void Point::print(ostream *os){
+  *os << "(" << x.re() << "," << y.re() << ")";
+}
+
+ostream &operator<<(ostream &os,  Point &c){
+  c.print(&os);
+  return os;
+}
+
 double Point::DISPLAY_RADIUS = 16;

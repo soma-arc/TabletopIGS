@@ -6,6 +6,7 @@
 #include <cmath>
 #include <GL/freeglut.h>
 
+using namespace std;
 
 class Point : public Figure{
  public:
@@ -19,7 +20,11 @@ class Point : public Figure{
   static double dist(Point a, Point b);
   static double DISPLAY_RADIUS;
 
+  void print(ostream *os);
+
   Complex x, y, z;
 };
+
+extern ostream &operator<<(ostream&, Point&);
 
 #endif
