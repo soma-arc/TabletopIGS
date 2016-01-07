@@ -19,6 +19,10 @@ Point::Point(Complex x, Complex y){
 }
 
 void Point::draw(){
+  drawCircle(DISPLAY_RADIUS, x.re(), y.re(), 0.);
+}
+
+void Point::fill(){
   fillCircle(DISPLAY_RADIUS, x.re(), y.re(), 0.);
 }
 

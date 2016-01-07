@@ -4,6 +4,7 @@
 #include "Complex.h"
 #include "Figure.h"
 #include "Point.h"
+#include <vector>
 
 using namespace std;
 
@@ -15,9 +16,11 @@ public:
   Point getCenter();
   double getR();
   virtual void draw();
+  virtual void fill();
   void print(ostream *os);
   Point center;
   double r, z;
+  vector<float> color;
 };
 
 extern ostream &operator<<(ostream&, Circle&);

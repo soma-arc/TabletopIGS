@@ -12,6 +12,7 @@ class MarkedPoint : public Point, public ReferenceMarker{
   MarkedPoint();
   MarkedPoint(const char* markerPath, double markerWidth);
   virtual void draw();
+  virtual void fill();
   void setDistanceFromOrigin(ReferenceMarker origin);
   void setRotationFromOrigin(ReferenceMarker origin);
 

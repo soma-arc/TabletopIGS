@@ -14,6 +14,7 @@ class Point : public Figure{
   Point(double x, double y);
   Point(Complex x, Complex y);
   virtual void draw();
+  virtual void fill();
   void setPosition(double x, double y);
   void setPosition(Complex x, Complex y);
 

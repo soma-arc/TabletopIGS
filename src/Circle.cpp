@@ -10,6 +10,7 @@ Circle::Circle(Point center, double r){
   this->center = center;
   this->r = r;
   this->z = 0.;
+  color = {1.f, 1.f, 1.f, 1.f};
 }
 
 Circle::Circle(Point a, Point b, Point c){
@@ -24,9 +25,14 @@ Circle::Circle(Point a, Point b, Point c){
                        (coefA * a.y.re() + coefB * b.y.re() + coefC * c.y.re()) / denom);
   this->r = Point::dist(center, a);
   this->z = 0.;
+color = {1.f, 1.f, 1.f, 1.f};
 }
 
 void Circle::draw(){
+  drawCircle(r, center.x.re(), center.y.re(), z);
+}
+
+void Circle::fill(){
   fillCircle(r, center.x.re(), center.y.re(), z);
 }
 
