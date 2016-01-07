@@ -186,8 +186,8 @@ void display() {
       origin.getTransMat(&(markerInfo[j]));
       arglCameraViewRH(origin.transMat, M, 1.0);
       glLoadMatrixd(M);
-      glTranslatef(0, 0, 20);
-      glutSolidCube(40);
+      //      glTranslatef(0, 0, 20);
+      //      glutSolidCube(40);
     }else{
       glPushMatrix();
       if(markerInfo[j].id == -1) continue;
@@ -198,7 +198,6 @@ void display() {
         p.setRotationFromOrigin(origin);
         points.push_back(p);
       }else{
-        cout <<"detect line" << endl;
         MarkedPoint p = idMarkedPointMap[markerInfo[j].id];
         p.getTransMat(&(markerInfo[j]));
         p.setDistanceFromOrigin(origin);
@@ -221,7 +220,6 @@ void display() {
              vector<double> distance = p.distanceFromOrigin;
              vector<double> rotation = p.rotationFromOrigin;
              Point pp(distance[0], distance[1]);
-             cout << pp  <<" , " << Point(pp.x.re() + 50 * cos(rotation[2]), pp.y.re() + 50 * sin(rotation[2])) << endl;
              Line l(pp,
                     Point(pp.x.re() + 50 * cos(rotation[2] + M_PI_2),
                           pp.y.re() + 50 * sin(rotation[2] + M_PI_2)));
@@ -232,16 +230,18 @@ void display() {
            });
 
   vector<Circle> circles;
+  float hue = 0.0;
   for_each(points.begin(), points.end(),
            [&](MarkedPoint p){
              vector<double> distance = p.distanceFromOrigin;
              vector<double> rotation = p.rotationFromOrigin;
-             Circle c(Point(distance[0], distance[1]), 30);
-             cout << "circle " << c << endl;
-             c.z = distance[2]; 
+             Circle c(Point(distance[0], distance[1]), 30 + 15 * sin(rotation[2]));
+             c.z = distance[2];
+             c.color[0] = hue;
              circles.push_back(c);
-             setGlColorHSVA(0., 1., 1., 1.);
-             c.draw();
+             setGlColorHSVA(hue, 1., 1., 1.);
+             hue += 0.3;
+             c.fill();
              for_each(lines.begin(), lines.end(),
                       [&](Line l){
                         Circle cir = Mobius::circleInverse(c, l);
@@ -251,10 +251,9 @@ void display() {
                       });
            });
 
-  const int maxLevel = 2;
+  const int maxLevel = 1;
   vector<vector<Circle>> inversedCircles;
   inversedCircles.push_back(circles);
-  cout << "search " << inversedCircles.size() <<endl;
   for(int i = 0; i < maxLevel ; i++){
     vector<Circle> v;
     inversedCircles.push_back(v);
@@ -268,14 +267,14 @@ void display() {
                              c.center.y.re() == c2.center.y.re()) return;
                           Circle in = Mobius::circleInverse(c, c2);
                           in.z = c.z;
-                          setGlColorHSVA(0.15 * (i + 1), 1., 1., 1.);
-                          in.draw();
+                          setGlColorHSVA(c2.color[0], 1., 1., 1.);
+                          //setGlColorHSVA(0.15 * (i + 1), 1., 1., 1.);
+                          in.fill();
                           inversedCircles[i + 1].push_back(in);
                         });
              });
   }
   glPopMatrix();
-  cout << "end " << endl;
   // glDisable(GL_LIGHTING);
   // glDisable(GL_DEPTH_TEST);
   // glDisable(GL_COLOR_MATERIAL);
