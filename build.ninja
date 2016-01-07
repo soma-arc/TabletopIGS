@@ -18,7 +18,6 @@ build Point.obj : compile src\Point.cpp
 build ReferenceMarker.obj : compile src\ReferenceMarker.cpp
 build MarkedPoint.obj : compile src\MarkedPoint.cpp
 build Line.obj : compile src\Line.cpp
-build LineEvaluator.obj : compile src\LineEvaluator.cpp
 build Circle.obj : compile src\Circle.cpp
 build Mobius.obj : compile src\Mobius.cpp
-build main.exe  : link main.obj Complex.obj Figure.obj Point.obj ReferenceMarker.obj MarkedPoint.obj Line.obj LineEvaluator.obj Mobius.obj Circle.obj
+build main.exe  : link main.obj Complex.obj Figure.obj Point.obj ReferenceMarker.obj MarkedPoint.obj Line.obj Mobius.obj Circle.obj
