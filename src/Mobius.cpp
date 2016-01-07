@@ -22,14 +22,17 @@ Circle Mobius::circleInverse(Circle inverseCircle, Circle otherCircle){
   return Circle(a, b, c);
 }
 
-Line Mobius::circleInverse(Circle inverseCircle, Line line){
+Circle Mobius::circleInverse(Circle inverseCircle, Line line){
   Point a = Mobius::circleInverse(inverseCircle,
                                   Point(line.calcX(1.0),
                                         1.0));
   Point b = Mobius::circleInverse(inverseCircle,
                                   Point(line.calcX(1.5),
                                         1.5));
-  return Line(a, b);
+  Point c = Mobius::circleInverse(inverseCircle,
+                                  Point(line.calcX(2.5),
+                                        2.5));
+  return Circle(a, b, c);
 }
 
 #endif

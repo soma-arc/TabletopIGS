@@ -22,9 +22,10 @@ void Line::setPoints(Point p1, Point p2){
 }
 
 void Line::draw(){
+  int width = glutGet( GLUT_WINDOW_WIDTH );
   glBegin(GL_LINES);
-  glVertex3f(p1.x.re(), p1.y.re(), 5.);
-  glVertex3f(p2.x.re(), p2.y.re(), 5.);
+  glVertex3f(width, calcY(width), z);
+  glVertex3f(-width, calcY(-width), z);
   glEnd();
 }
 

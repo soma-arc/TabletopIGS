@@ -5,6 +5,8 @@
 #include <gl/freeglut.h>
 #endif
 
+#define _USE_MATH_DEFINES
+#include <cmath>
 #include <iostream>
 #include <AR/ar.h>
 #include <AR/video.h>
@@ -62,8 +64,7 @@ bool setupCamera(char videoConfigFile[], char cameraParamFile[]) {
   return true;
 }
 
-void cylinder(float radius, float height, int sides)
-{
+void cylinder(float radius, float height, int sides){
   double pi = 3.1415;
   glNormal3d(0.0, 1.0, 0.0);
   glBegin(GL_POLYGON);
@@ -81,7 +82,7 @@ void cylinder(float radius, float height, int sides)
     glVertex3f((GLfloat)(radius*cos(t)),(GLfloat)(radius*sin(t)), height);
   }
   glEnd();
-  //下面
+
   glNormal3d(0.0, -1.0, 0.0);
   glBegin(GL_POLYGON);
   for(double i = sides; i >= 0; --i) {
@@ -212,18 +213,6 @@ void display() {
   double M[16];
   arglCameraViewRH(origin.transMat, M, 1.0);
   glLoadMatrixd(M);
-  vector<Circle> circles;
-  for_each(points.begin(), points.end(),
-           [&](MarkedPoint p){
-             vector<double> distance = p.distanceFromOrigin;
-             vector<double> rotation = p.rotationFromOrigin;
-             Circle c(Point(distance[0], distance[1]), 30);
-             cout << "circle " << c << endl;
-             c.z = distance[2];
-             circles.push_back(c);
-             setGlColorHSVA(0., 1., 1., 1.);
-             c.draw();
-           });
 
   vector<Line> lines;
   glLineWidth(5.f);
@@ -234,12 +223,32 @@ void display() {
              Point pp(distance[0], distance[1]);
              cout << pp  <<" , " << Point(pp.x.re() + 50 * cos(rotation[2]), pp.y.re() + 50 * sin(rotation[2])) << endl;
              Line l(pp,
-                    Point(pp.x.re() + 50 * cos(rotation[2]),
-                          pp.y.re() + 50 * sin(rotation[2])));
+                    Point(pp.x.re() + 50 * cos(rotation[2] + M_PI_2),
+                          pp.y.re() + 50 * sin(rotation[2] + M_PI_2)));
              lines.push_back(l);
              setGlColorHSVA(0., 0., 0., 1.);
-             l.z = distance[2] * 10;
+             l.z = distance[2];
              l.draw();
+           });
+
+  vector<Circle> circles;
+  for_each(points.begin(), points.end(),
+           [&](MarkedPoint p){
+             vector<double> distance = p.distanceFromOrigin;
+             vector<double> rotation = p.rotationFromOrigin;
+             Circle c(Point(distance[0], distance[1]), 30);
+             cout << "circle " << c << endl;
+             c.z = distance[2]; 
+             circles.push_back(c);
+             setGlColorHSVA(0., 1., 1., 1.);
+             c.draw();
+             for_each(lines.begin(), lines.end(),
+                      [&](Line l){
+                        Circle cir = Mobius::circleInverse(c, l);
+                        setGlColorHSVA(1., 0., 0., 1.);
+                        cir.z = c.z;
+                        cir.draw();
+                      });
            });
 
   const int maxLevel = 2;
@@ -265,24 +274,6 @@ void display() {
                         });
              });
   }
-  // for_each(circles.begin(),
-  //          circles.end(),
-  //          [&](Circle c){
-  //            for_each(circles.begin(),
-  //                     circles.end(),
-  //                     [&](Circle c2){
-  //                       if(c.center.x.re() == c2.center.x.re() &&
-  //                          c.center.y.re() == c2.center.y.re()) return;
-  //                       Circle in = Mobius::circleInverse(c, c2);
-  //                       in.z = c.z;
-  //                       setGlColorHSVA(0.1, 1., 1., 1.);
-  //                       in.draw();
-  //                       // glPushMatrix();
-  //                       // glTranslatef(in.center.x.re(), in.center.y.re(), in.z);
-  //                       // cylinder(in.r, 2, 100);
-  //                       // glPopMatrix();
-  //                     });
-  //              });
   glPopMatrix();
   cout << "end " << endl;
   // glDisable(GL_LIGHTING);
@@ -304,36 +295,35 @@ void quit() {
 }
 
 void loadPatterns(){
-  MarkedPoint pointA("resources/A.pat", 40);
-  MarkedPoint pointB("resources/B.pat", 40);
+  //  MarkedPoint pointA("resources/A.pat", 40);
+  //  MarkedPoint pointB("resources/B.pat", 40);
   MarkedPoint pointC("resources/C.pat", 40);
   MarkedPoint pointD("resources/D.pat", 40);
-  MarkedPoint pointE("resources/E.pat", 40);
-  MarkedPoint pointF("resources/F.pat", 40);
-  MarkedPoint pointP("resources/P.pat", 40);
+  //  MarkedPoint pointE("resources/E.pat", 40);
+  //  MarkedPoint pointF("resources/F.pat", 40);
+  //  MarkedPoint pointP("resources/P.pat", 40);
   MarkedPoint rect("resources/rect.pat", 40);
   MarkedPoint line("resources/line.pat", 40);
-  idMarkedPointMap[pointA.patternId] = pointA;
-  idMarkedPointMap[pointB.patternId] = pointB;
+  MarkedPoint line2("resources/line2.pat", 40);
+  //  idMarkedPointMap[pointA.patternId] = pointA;
+  //idMarkedPointMap[pointB.patternId] = pointB;
   idMarkedPointMap[pointC.patternId] = pointC;
   idMarkedPointMap[pointD.patternId] = pointD;
-  idMarkedPointMap[pointE.patternId] = pointE;
-  idMarkedPointMap[pointF.patternId] = pointF;
-  idMarkedPointMap[pointP.patternId] = pointP;
+  //  idMarkedPointMap[pointE.patternId] = pointE;
+  //  idMarkedPointMap[pointF.patternId] = pointF;
+  //  idMarkedPointMap[pointP.patternId] = pointP;
   idMarkedPointMap[rect.patternId] = rect;
   idMarkedPointMap[line.patternId] = line;
+  idMarkedPointMap[line2.patternId] = line2;
   circleId = rect.patternId;
   lineId = line.patternId;
-  cout << circleId << endl;
-    cout << lineId << endl;
-    cout << origin.patternId << endl;
 }
 
 int main(int argc, char *argv[]) {
   glutInit(&argc, argv);
   glutInitWindowSize(width, height);
   glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGBA | GLUT_DEPTH);
-  glutCreateWindow("ARToolKit Sample");
+  glutCreateWindow("Inversive geometry");
   arSettings = arglSetupForCurrentContext();
 
   setupCamera("resources/WDM_camera_flipV.xml", "resources/camera_para.dat");

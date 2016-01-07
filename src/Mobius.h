@@ -10,7 +10,7 @@ class Mobius{
   Mobius();
   static Point circleInverse(Circle c, Point p);
   static Circle circleInverse(Circle inverseCircle, Circle otherCircle);
-  static Line circleInverse(Circle inverseCircle, Line line);
+  static Circle circleInverse(Circle inverseCircle, Line line);
 };
 
 #endif
