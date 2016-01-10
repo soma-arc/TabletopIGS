@@ -36,6 +36,11 @@ void Circle::fill(){
   fillCircle(r, center.x.re(), center.y.re(), z);
 }
 
+void Circle::drawCenter(){
+  glColor3f(1., 1., 1.);
+  fillCircle(1., center.x.re(), center.y.re(), z);
+}
+
 void Circle::print(ostream *os){
   *os << "r = " << r << " center = " << center << " }";
 }

@@ -17,6 +17,7 @@ public:
   double getR();
   virtual void draw();
   virtual void fill();
+  void drawCenter();
   void print(ostream *os);
   Point center;
   double r, z;

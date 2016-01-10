@@ -19,9 +19,9 @@
 #include "ReferenceMarker.h"
 #include "MarkedPoint.h"
 #include "Line.h"
-#include "LineEvaluator.h"
 #include "Circle.h"
 #include "Mobius.h"
+#include <string>
 
 ARParam arCameraParam;
 ARGL_CONTEXT_SETTINGS_REF arSettings;
@@ -63,6 +63,15 @@ bool setupCamera(char videoConfigFile[], char cameraParamFile[]) {
   arInitCparam(&arCameraParam);
 
   return true;
+}
+
+void drawString(string str, float x0, float y0, float z0){
+  glRasterPos3f(x0, y0, z0);
+  int size = (int)str.size();
+  for(int i = 0; i < size; ++i){
+    char ic = str[i];
+    glutBitmapCharacter(GLUT_BITMAP_HELVETICA_18, ic);
+  }
 }
 
 void setGlColorHSVA(float h, float s, float v, float a){
@@ -123,7 +132,7 @@ void mySetLight() {
 }
 
 void drawOrigin(){
-    glBegin(GL_LINES);
+  glBegin(GL_LINES);
   glVertex3d(-10., 0, 0.);
   glVertex3d(10., 0, 0.);
   glVertex3d(0, 10., 0.);
@@ -159,7 +168,7 @@ vector<Circle> getCircles(vector<MarkedPoint> circlePoints){
              c.z = distance[2];
              c.color[0] = hue;
              circles.push_back(c);
-             hue += 0.3;
+             hue += 0.2;
            });
   return circles;
 }
@@ -234,6 +243,7 @@ void display() {
   double M[16];
   arglCameraViewRH(origin.transMat, M, 1.0);
   glLoadMatrixd(M);
+  setGlColorHSVA(0., 1., 1., 1.);
   drawOrigin();
 
   glLineWidth(5.f);
@@ -257,6 +267,13 @@ void display() {
 
   drawInversedCircles(circles);
 
+  for_each(circles.begin(), circles.end(),
+           [&](Circle c){
+             c.drawCenter();
+             glColor3f(0., 1., 0.);
+             drawString("("+ to_string((int) c.center.x.re()) +", "+ to_string((int) c.center.y.re()) +")",
+                        c.center.x.re() - 1., c.center.y.re() - 1., c.z);
+           });
   glPopMatrix();
   glutSwapBuffers();
 }
