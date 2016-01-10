@@ -248,8 +248,6 @@ void display() {
 
   glLineWidth(5.f);
   vector<Line> lines = getLines(linePoints);
-  for_each(lines.begin(), lines.end(),
-           [](Line l){ l.draw();});
 
   vector<Circle> circles = getCircles(circlePoints);
   for_each(circles.begin(), circles.end(),
@@ -266,6 +264,10 @@ void display() {
            });
 
   drawInversedCircles(circles);
+
+  setGlColorHSVA(0., 0., 0., 1.);
+  for_each(lines.begin(), lines.end(),
+           [](Line l){ l.draw();});
 
   for_each(circles.begin(), circles.end(),
            [&](Circle c){
